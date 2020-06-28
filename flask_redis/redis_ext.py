@@ -1153,3 +1153,50 @@ class RedisExtension:
         ``score_cast_func`` a callable used to cast the score return value
         """
         return self.redis.zrevrangebyscore(self._get_key(name), max, min, start, num, withscores, score_cast_func)
+
+    def zrevrank(self, name, value):
+        """
+        Returns a 0-based value indicating the descending rank of
+        ``value`` in sorted set ``name``
+        """
+        return self.redis.zrevrank(self._get_key(name), value)
+
+    def zscore(self, name, value):
+        "Return the score of element ``value`` in sorted set ``name``"
+        return self.redis.zscore(self._get_key(name), value)
+
+    def zunionstore(self, dest, keys, aggregate=None):
+        """
+        Union multiple sorted sets specified by ``keys`` into
+        a new sorted set, ``dest``. Scores in the destination will be
+        aggregated based on the ``aggregate``, or SUM if none is provided.
+        """
+        # TODO: Update keys
+        return self.redis.zunionstore(dest, keys, aggregate)
+
+    def pfadd(self, name, *values):
+        "Adds the specified elements to the specified HyperLogLog."
+        return self.redis.pfadd(self._get_key(name), *values)
+
+    def pfcount(self, *sources):
+        """
+        Return the approximated cardinality of
+        the set observed by the HyperLogLog at key(s).
+        """
+        return self.redis.pfcount(*sources)
+
+    def pfmerge(self, dest, *sources):
+        "Merge N different HyperLogLogs into a single one."
+        return self.redis.pfmerge(self._get_key(dest), *sources)
+
+    def hdel(self, name, *keys):
+        "Delete ``keys`` from hash ``name``"
+        return self.redis.hdel(self._get_key(name), *keys)
+
+    def hexists(self, name, key):
+        "Returns a boolean indicating if ``key`` exists within hash ``name``"
+        return self.redis.hexists(self._get_key(name), self._get_key(key))
+
+    def hget(self, name, key):
+        "Return the value of ``key`` within the hash ``name``"
+        return self.redis.hget(self._get_key(name), self._get_key(key))
