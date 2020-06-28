@@ -682,3 +682,251 @@ class RedisExtension:
     def spop(self, name, count=None):
         "Remove and return a random member of set ``name``"
         return self.redis.spop(self._get_key(name), count)
+
+    def srandmember(self, name, number=None):
+        """
+        If ``number`` is None, returns a random member of set ``name``.
+
+        If ``number`` is supplied, returns a list of ``number`` random
+        members of set ``name``. Note this is only available when running
+        Redis 2.6+.
+        """
+        return self.redis.srandmember(self._get_key(name), number)
+
+    def srem(self, name, *values):
+        "Remove ``values`` from set ``name``"
+        return self.redis.srem(self._get_key(name), *values)
+
+    def sunion(self, keys, *args):
+        "Return the union of sets specified by ``keys``"
+        # TODO: Update keys
+        return self.redis.sunion(keys, *args)
+
+    def sunionstore(self, dest, keys, *args):
+        """
+        Store the union of sets specified by ``keys`` into a new
+        set named ``dest``.  Returns the number of keys in the new set.
+        """
+        # TODO: Update Keys
+        return self.redis.sunionstore(dest, keys, *args)
+
+    def xack(self, name, groupname, *ids):
+        """
+        Acknowledges the successful processing of one or more messages.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        *ids: message ids to acknowlege.
+        """
+        # TODO: Update Keys
+        return self.redis.xack(name, groupname, *ids)
+
+    def xadd(self, name, fields, id='*', maxlen=None, approximate=True):
+        """
+        Add to a stream.
+        name: name of the stream
+        fields: dict of field/value pairs to insert into the stream
+        id: Location to insert this record. By default it is appended.
+        maxlen: truncate old stream members beyond this size
+        approximate: actual stream length may be slightly more than maxlen
+
+        """
+        # TODO: Update keys
+        return self.redis.xadd(name, fields, id, maxlen, approximate)
+
+    def xclaim(self, name, groupname, consumername, min_idle_time, message_ids,
+               idle=None, time=None, retrycount=None, force=False,
+               justid=False):
+        """
+        Changes the ownership of a pending message.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        consumername: name of a consumer that claims the message.
+        min_idle_time: filter messages that were idle less than this amount of
+        milliseconds
+        message_ids: non-empty list or tuple of message IDs to claim
+        idle: optional. Set the idle time (last time it was delivered) of the
+         message in ms
+        time: optional integer. This is the same as idle but instead of a
+         relative amount of milliseconds, it sets the idle time to a specific
+         Unix time (in milliseconds).
+        retrycount: optional integer. set the retry counter to the specified
+         value. This counter is incremented every time a message is delivered
+         again.
+        force: optional boolean, false by default. Creates the pending message
+         entry in the PEL even if certain specified IDs are not already in the
+         PEL assigned to a different client.
+        justid: optional boolean, false by default. Return just an array of IDs
+         of messages successfully claimed, without returning the actual message
+        """
+        return self.redis.xclaim(name, groupname, consumername, min_idle_time, message_ids, idle, time,
+                                 retrycount, force, justid)
+
+    def xdel(self, name, *ids):
+        """
+        Deletes one or more messages from a stream.
+        name: name of the stream.
+        *ids: message ids to delete.
+        """
+        return self.redis.xdel(self._get_key(name), *ids)
+
+    def xgroup_create(self, name, groupname, id='$', mkstream=False):
+        """
+        Create a new consumer group associated with a stream.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        id: ID of the last item in the stream to consider already delivered.
+        """
+        # TODO: Update keys
+        return self.xgroup_create(name, groupname, id, mkstream)
+
+    def xgroup_delconsumer(self, name, groupname, consumername):
+        """
+        Remove a specific consumer from a consumer group.
+        Returns the number of pending messages that the consumer had before it
+        was deleted.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        consumername: name of consumer to delete
+        """
+        # TODO: Update keys
+        return self.redis.xgroup_delconsumer(name, groupname, consumername)
+
+    def xgroup_destroy(self, name, groupname):
+        """
+        Destroy a consumer group.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        """
+        # TODO: Update keys
+        return self.redis.xgroup_destroy(name, groupname)
+
+    def xgroup_setid(self, name, groupname, id):
+        """
+        Set the consumer group last delivered ID to something else.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        id: ID of the last item in the stream to consider already delivered.
+        """
+        # TODO: Update keys
+        return self.redis.xgroup_setid(name, groupname, id)
+
+    def xinfo_consumers(self, name, groupname):
+        """
+        Returns general information about the consumers in the group.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        """
+        # TODO: Update keys
+        return self.redis.xinfo_consumers(name, groupname)
+
+    def xinfo_groups(self, name):
+        """
+        Returns general information about the consumer groups of the stream.
+        name: name of the stream.
+        """
+        # TODO: Update keys
+        return self.redis.xinfo_groups(name)
+
+    def xinfo_stream(self, name):
+        """
+        Returns general information about the stream.
+        name: name of the stream.
+        """
+        # TODO: Update keys
+        return self.redis.xinfo_stream(name)
+
+    def xlen(self, name):
+        """
+        Returns the number of elements in a given stream.
+        """
+        # TODO: Update keys
+        return self.redis.xlen(name)
+
+    def xpending(self, name, groupname):
+        """
+        Returns information about pending messages of a group.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        """
+        # TODO: Update keys
+        return self.redis.xpending(name, groupname)
+
+    def xpending_range(self, name, groupname, min, max, count,
+                       consumername=None):
+        """
+        Returns information about pending messages, in a range.
+        name: name of the stream.
+        groupname: name of the consumer group.
+        min: minimum stream ID.
+        max: maximum stream ID.
+        count: number of messages to return
+        consumername: name of a consumer to filter by (optional).
+        """
+        # TODO: Update keys
+        return self.redis.xpending_range(name, groupname, min, max, count, consumername)
+
+    def xrange(self, name, min='-', max='+', count=None):
+        """
+        Read stream values within an interval.
+        name: name of the stream.
+        start: first stream ID. defaults to '-',
+               meaning the earliest available.
+        finish: last stream ID. defaults to '+',
+                meaning the latest available.
+        count: if set, only return this many items, beginning with the
+               earliest available.
+        """
+        # TODO: Update keys
+        return self.redis.xrange(name, min, max, count)
+
+    def xread(self, streams, count=None, block=None):
+        """
+        Block and monitor multiple streams for new data.
+        streams: a dict of stream names to stream IDs, where
+                   IDs indicate the last ID already seen.
+        count: if set, only return this many items, beginning with the
+               earliest available.
+        block: number of milliseconds to wait, if nothing already present.
+        """
+        # TODO: Update keys
+        return self.redis.xread(streams, count, block)
+
+    def xreadgroup(self, groupname, consumername, streams, count=None,
+                   block=None, noack=False):
+        """
+        Read from a stream via a consumer group.
+        groupname: name of the consumer group.
+        consumername: name of the requesting consumer.
+        streams: a dict of stream names to stream IDs, where
+               IDs indicate the last ID already seen.
+        count: if set, only return this many items, beginning with the
+               earliest available.
+        block: number of milliseconds to wait, if nothing already present.
+        noack: do not add messages to the PEL
+        """
+        # TODO: Update keys
+        return self.redis.xreadgroup(groupname, consumername, streams, count, block, noack)
+
+    def xrevrange(self, name, max='+', min='-', count=None):
+        """
+        Read stream values within an interval, in reverse order.
+        name: name of the stream
+        start: first stream ID. defaults to '+',
+               meaning the latest available.
+        finish: last stream ID. defaults to '-',
+                meaning the earliest available.
+        count: if set, only return this many items, beginning with the
+               latest available.
+        """
+        # TODO: Update keys
+        return self.redis.xrevrange(name, max, min, count)
+
+    def xtrim(self, name, maxlen, approximate=True):
+        """
+        Trims old messages from a stream.
+        name: name of the stream.
+        maxlen: truncate old stream messages beyond this size
+        approximate: actual stream length may be slightly more than maxlen
+        """
+        # TODO: Update keys
+        return self.redis.xtrim(name, maxlen, approximate)
