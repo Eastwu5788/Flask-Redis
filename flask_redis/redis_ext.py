@@ -1097,3 +1097,59 @@ class RedisExtension:
     def zrem(self, name, *values):
         "Remove member ``values`` from sorted set ``name``"
         return self.redis.zrem(self._get_key(name), *values)
+
+    def zremrangebylex(self, name, min, max):
+        """
+        Remove all elements in the sorted set ``name`` between the
+        lexicographical range specified by ``min`` and ``max``.
+
+        Returns the number of elements removed.
+        """
+        return self.redis.zremrangebylex(self._get_key(name), min, max)
+
+    def zremrangebyrank(self, name, min, max):
+        """
+        Remove all elements in the sorted set ``name`` with ranks between
+        ``min`` and ``max``. Values are 0-based, ordered from smallest score
+        to largest. Values can be negative indicating the highest scores.
+        Returns the number of elements removed
+        """
+        return self.redis.zremrangebyrank(self._get_key(name), min, max)
+
+    def zremrangebyscore(self, name, min, max):
+        """
+        Remove all elements in the sorted set ``name`` with scores
+        between ``min`` and ``max``. Returns the number of elements removed.
+        """
+        return self.redis.zremrangebyscore(self._get_key(name), min, max)
+
+    def zrevrange(self, name, start, end, withscores=False,
+                  score_cast_func=float):
+        """
+        Return a range of values from sorted set ``name`` between
+        ``start`` and ``end`` sorted in descending order.
+
+        ``start`` and ``end`` can be negative, indicating the end of the range.
+
+        ``withscores`` indicates to return the scores along with the values
+        The return type is a list of (value, score) pairs
+
+        ``score_cast_func`` a callable used to cast the score return value
+        """
+        return self.redis.zrevrange(self._get_key(name), start, end, withscores, score_cast_func)
+
+    def zrevrangebyscore(self, name, max, min, start=None, num=None,
+                         withscores=False, score_cast_func=float):
+        """
+        Return a range of values from the sorted set ``name`` with scores
+        between ``min`` and ``max`` in descending order.
+
+        If ``start`` and ``num`` are specified, then return a slice
+        of the range.
+
+        ``withscores`` indicates to return the scores along with the values.
+        The return type is a list of (value, score) pairs
+
+        ``score_cast_func`` a callable used to cast the score return value
+        """
+        return self.redis.zrevrangebyscore(self._get_key(name), max, min, start, num, withscores, score_cast_func)
