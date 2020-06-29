@@ -4,11 +4,17 @@
 # All rights reserved
 # @Author: 'Wu Dong <wudong@eastwu.cn>'
 # @Time: '2020-06-24 16:54'
+# sys
+import logging
+
 # 3p
 from redis import Redis
 
 # project
-from .macro import K_RDS_PREFIX
+from .macro import K_RDS_PREFIX, K_RDS_URL
+
+
+log = logging.getLogger(__name__)
 
 
 class RedisExtension:
@@ -17,6 +23,7 @@ class RedisExtension:
         """ Initialize redis client with special config
         """
         self._config = config
+        self.rds_prefix = self._config.pop(K_RDS_PREFIX, None)
 
         # Transform all of the config key with 'REDIS_' to init params
         # e.g. REDIS_HOST -> host
@@ -24,19 +31,29 @@ class RedisExtension:
         for key, value in config.items():
             if not key.startswith("REDIS_"):
                 continue
-            kwargs[key[6:]] = value.lower()
+            kwargs[key[6:].lower()] = value
 
-        self.redis = Redis(**kwargs)
+        rds_url = config.pop(K_RDS_URL, None)
+        if rds_url:
+            self.redis = Redis.from_url(rds_url, kwargs.pop("db", None))
+        else:
+            self.redis = Redis(**kwargs)
 
     def _get_key(self, key):
         """ Generate operate key
 
         :param key: origin key
         """
-        rds_prefix = self._config.get(K_RDS_PREFIX)
-        if rds_prefix:
-            return rds_prefix + key
+        if not key or not isinstance(key, str):
+            raise ValueError("Invalid redis cache key")
 
+        if self.rds_prefix and key.startswith("-"):
+            return key[1:]
+
+        if self.rds_prefix:
+            new_key = self.rds_prefix + key
+            log.debug("cache key transform to '%s'", new_key)
+            return new_key
         return key
 
     def _get_keys(self, keys):
@@ -1200,3 +1217,7 @@ class RedisExtension:
     def hget(self, name, key):
         "Return the value of ``key`` within the hash ``name``"
         return self.redis.hget(self._get_key(name), self._get_key(key))
+
+    def hgetall(self, name):
+        "Return a Python dict of the hash's name/value pairs"
+        return self.redis.hgetall(self._get_key(name))

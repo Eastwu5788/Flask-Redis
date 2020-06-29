@@ -10,3 +10,9 @@ K_RDS_PREFIX = "REDIS_PREFIX"
 
 # redis binds
 K_RDS_BINDS = "REDIS_BINDS"
+
+# redis url
+K_RDS_URL = "REDIS_URL"
+
+# redis default key
+K_RDS_DEFAULT_BIND = "REDIS_DEFAULT_BIND"
