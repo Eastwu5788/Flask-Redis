@@ -1221,3 +1221,21 @@ class RedisExtension:
     def hgetall(self, name):
         "Return a Python dict of the hash's name/value pairs"
         return self.redis.hgetall(self._get_key(name))
+
+    def hincrby(self, name, key, amount=1):
+        "Increment the value of ``key`` in hash ``name`` by ``amount``"
+        return self.redis.hincrby(name, key, amount)
+
+    def hincrbyfloat(self, name, key, amount=1.0):
+        """
+        Increment the value of ``key`` in hash ``name`` by floating ``amount``
+        """
+        return self.redis.hincrbyfloat(name, key, amount)
+
+    def hkeys(self, name):
+        "Return the list of keys within hash ``name``"
+        return self.redis.hkeys(self._get_key(name))
+
+    def hlen(self, name):
+        "Return the number of elements in hash ``name``"
+        return self.redis.hlen(self._get_key(name))
