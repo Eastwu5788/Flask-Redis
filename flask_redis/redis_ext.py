@@ -1239,3 +1239,134 @@ class RedisExtension:
     def hlen(self, name):
         "Return the number of elements in hash ``name``"
         return self.redis.hlen(self._get_key(name))
+
+    def hset(self, name, key, value):
+        """
+        Set ``key`` to ``value`` within hash ``name``
+        Returns 1 if HSET created a new field, otherwise 0
+        """
+        return self.redis.hset(name, key, value)
+
+    def hsetnx(self, name, key, value):
+        """
+        Set ``key`` to ``value`` within hash ``name`` if ``key`` does not
+        exist.  Returns 1 if HSETNX created a field, otherwise 0.
+        """
+        return self.redis.hsetnx(name, key, value)
+
+    def hmset(self, name, mapping):
+        """
+        Set key to value within hash ``name`` for each corresponding
+        key and value from the ``mapping`` dict.
+        """
+        return self.redis.hmset(name, mapping)
+
+    def hmget(self, name, keys, *args):
+        "Returns a list of values ordered identically to ``keys``"
+        return self.redis.hmget(name, keys, *args)
+
+    def hvals(self, name):
+        "Return the list of values within hash ``name``"
+        return self.redis.hvals(name)
+
+    def hstrlen(self, name, key):
+        """
+        Return the number of bytes stored in the value of ``key``
+        within hash ``name``
+        """
+        return self.redis.hstrlen(name, key)
+
+    def publish(self, channel, message):
+        """
+        Publish ``message`` on ``channel``.
+        Returns the number of subscribers the message was delivered to.
+        """
+        return self.redis.publish(channel, message)
+
+    def pubsub_channels(self, pattern='*'):
+        """
+        Return a list of channels that have at least one subscriber
+        """
+        return self.redis.pubsub_channels(pattern)
+
+    # GEO COMMANDS
+    def geoadd(self, name, *values):
+        """
+        Add the specified geospatial items to the specified key identified
+        by the ``name`` argument. The Geospatial items are given as ordered
+        members of the ``values`` argument, each item or place is formed by
+        the triad longitude, latitude and name.
+        """
+        return self.redis.geoadd(self._get_key(name), *values)
+
+    def geodist(self, name, place1, place2, unit=None):
+        """
+        Return the distance between ``place1`` and ``place2`` members of the
+        ``name`` key.
+        The units must be one of the following : m, km mi, ft. By default
+        meters are used.
+        """
+        return self.redis.geodist(name, place1, place2, unit)
+
+    def geohash(self, name, *values):
+        """
+        Return the geo hash string for each item of ``values`` members of
+        the specified key identified by the ``name`` argument.
+        """
+        return self.redis.geohash(self._get_key(name), *values)
+
+    def geopos(self, name, *values):
+        """
+        Return the positions of each item of ``values`` as members of
+        the specified key identified by the ``name`` argument. Each position
+        is represented by the pairs lon and lat.
+        """
+        return self.redis.geopos(self._get_key(name), *values)
+
+    def georadius(self, name, longitude, latitude, radius, unit=None,
+                  withdist=False, withcoord=False, withhash=False, count=None,
+                  sort=None, store=None, store_dist=None):
+        """
+        Return the members of the specified key identified by the
+        ``name`` argument which are within the borders of the area specified
+        with the ``latitude`` and ``longitude`` location and the maximum
+        distance from the center specified by the ``radius`` value.
+
+        The units must be one of the following : m, km mi, ft. By default
+
+        ``withdist`` indicates to return the distances of each place.
+
+        ``withcoord`` indicates to return the latitude and longitude of
+        each place.
+
+        ``withhash`` indicates to return the geohash string of each place.
+
+        ``count`` indicates to return the number of elements up to N.
+
+        ``sort`` indicates to return the places in a sorted way, ASC for
+        nearest to fairest and DESC for fairest to nearest.
+
+        ``store`` indicates to save the places names in a sorted set named
+        with a specific key, each element of the destination sorted set is
+        populated with the score got from the original geo sorted set.
+
+        ``store_dist`` indicates to save the places names in a sorted set
+        named with a specific key, instead of ``store`` the sorted set
+        destination score is set with the distance.
+        """
+        return self.redis.georadius(name, longitude, latitude, radius, unit,
+                                    withdist, withcoord, withhash, count,
+                                    sort, store, store_dist)
+
+    def georadiusbymember(self, name, member, radius, unit=None,
+                          withdist=False, withcoord=False, withhash=False,
+                          count=None, sort=None, store=None, store_dist=None):
+        """
+        This command is exactly like ``georadius`` with the sole difference
+        that instead of taking, as the center of the area to query, a longitude
+        and latitude value, it takes the name of a member already existing
+        inside the geospatial index represented by the sorted set.
+        """
+        return self.redis.georadiusbymember(name, member, radius, unit,
+                                            withdist, withcoord, withhash,
+                                            count, sort, store, store_dist)
