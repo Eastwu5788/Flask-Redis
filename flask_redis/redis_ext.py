@@ -35,7 +35,8 @@ class RedisExtension:
 
         rds_url = config.pop(K_RDS_URL, None)
         if rds_url:
-            self.redis = Redis.from_url(rds_url, kwargs.pop("db", None))
+            del kwargs["url"]
+            self.redis = Redis.from_url(rds_url, **kwargs)
         else:
             self.redis = Redis(**kwargs)
 
