@@ -216,8 +216,9 @@ class RedisExtension:
         """
         Returns a list of values ordered identically to ``keys``
         """
-        # TODO: Update keys
-        return self.redis.mget(keys, *args)
+        new_keys = self._get_keys(keys)
+        new_args = self._get_keys(args)
+        return self.redis.mget(new_keys, *new_args)
 
     def mset(self, mapping):
         """
@@ -225,8 +226,10 @@ class RedisExtension:
         key/value pairs. Both keys and values should be strings or types that
         can be cast to a string via str().
         """
-        # TODO: Update keys
-        return self.redis.mset(mapping)
+        items = dict()
+        for key, value in mapping.items():
+            items[self._get_key(key)] = value
+        return self.redis.mset(items)
 
     def msetnx(self, mapping):
         """
@@ -235,8 +238,10 @@ class RedisExtension:
         should be strings or types that can be cast to a string via str().
         Returns a boolean indicating if the operation was successful.
         """
-        # TODO: Update keys
-        return self.redis.msetnx(mapping)
+        items = dict()
+        for key, value in mapping.items():
+            items[self._get_key(key)] = value
+        return self.redis.msetnx(items)
 
     def move(self, name, db):
         """Moves the key ``name`` to a different Redis database ``db``"""

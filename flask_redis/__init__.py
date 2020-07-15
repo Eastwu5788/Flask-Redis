@@ -60,3 +60,9 @@ class Redis:
         if obj is None:
             raise KeyError("Cannot read db with name '%s'" % item)
         return obj
+
+    def __delitem__(self, name):
+        obj = self.instances.get(self.default_bind)
+        if obj is None:
+            raise KeyError("Cannot load redis client")
+        obj.delete(name)
