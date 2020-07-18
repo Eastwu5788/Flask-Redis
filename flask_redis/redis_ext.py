@@ -71,6 +71,14 @@ class RedisExtension:
         """
         return getattr(self.redis, item)
 
+    def append(self, key, value):
+        """
+        Appends the string ``value`` to the value at ``key``. If ``key``
+        doesn't already exist, create it with a value of ``value``.
+        Returns the new length of the value at ``key``.
+        """
+        return self.redis.append(self._get_key(key), value)
+
     def bitcount(self, key, start=None, end=None):
         """
         Returns the count of set bits in the value of ``key``.  Optional

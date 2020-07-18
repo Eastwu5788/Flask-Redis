@@ -3,7 +3,7 @@
 # (C) Wu Dong, 2020
 # All rights reserved
 # @Author: 'Wu Dong <wudong@eastwu.cn>'
-# @Time: '2020-07-18 14:19'
+# @Time: '2020-07-18 14:25'
 from flask import Flask
 from flask_redis import Redis
 
@@ -19,18 +19,17 @@ redis.init_app(app)
 
 
 if __name__ == "__main__":
-    redis.set("STR:K1", "VALE1")
-    redis.set("-STR:K2", "VALUE212")
+    redis.set("INCR:K1", 1)
+    redis.set("-INCR:K2", 100)
 
-    print(redis.strlen("STR:K1"))
-    print(redis.strlen("-STR:K2"))
+    redis.incr("INCR:K1", amount=5)
+    redis.incrby("-INCR:K2", amount=500)
 
-    redis.append("STR:K1", "APPEND1")
-    redis.append("-STR:K2", "APPEND2")
+    redis.incrbyfloat("INCR:K1", amount=5.2)
+    redis.incrbyfloat("-INCR:K2", amount=4.1)
 
-    print(redis.get("STR:K1"))
-    print(redis.get("-STR:K2"))
+    print(redis.get("INCR:K1"))
+    print(redis.get("-INCR:K2"))
 
-    redis.expire("STR:K1", 60)
-    redis.expire("-STR:K2", 60)
-
+    redis.expire("INCR:K1", 60)
+    redis.expire("-INCR:K2", 60)
