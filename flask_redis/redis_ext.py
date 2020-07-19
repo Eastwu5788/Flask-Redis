@@ -622,7 +622,8 @@ class RedisExtension:
 
         ``count`` allows for hint the minimum number of returns
         """
-        return self.redis.hscan(self._get_key(name), cursor, match, count)
+        name = self._get_key(name)
+        return self.redis.hscan(name, cursor, match, count)
 
     def hscan_iter(self, name, match=None, count=None):
         """
@@ -633,7 +634,8 @@ class RedisExtension:
 
         ``count`` allows for hint the minimum number of returns
         """
-        return self.redis.hscan_iter(self._get_key(name), match, count)
+        name = self._get_key(name)
+        return self.redis.hscan_iter(name, match, count)
 
     def zscan(self, name, cursor=0, match=None, count=None,
               score_cast_func=float):
@@ -1226,39 +1228,47 @@ class RedisExtension:
 
     def hexists(self, name, key):
         "Returns a boolean indicating if ``key`` exists within hash ``name``"
-        return self.redis.hexists(self._get_key(name), self._get_key(key))
+        name = self._get_key(name)
+        return self.redis.hexists(name, key)
 
     def hget(self, name, key):
         "Return the value of ``key`` within the hash ``name``"
-        return self.redis.hget(self._get_key(name), self._get_key(key))
+        name = self._get_key(name)
+        return self.redis.hget(name, key)
 
     def hgetall(self, name):
         "Return a Python dict of the hash's name/value pairs"
-        return self.redis.hgetall(self._get_key(name))
+        name = self._get_key(name)
+        return self.redis.hgetall(name)
 
     def hincrby(self, name, key, amount=1):
         "Increment the value of ``key`` in hash ``name`` by ``amount``"
+        name = self._get_key(name)
         return self.redis.hincrby(name, key, amount)
 
     def hincrbyfloat(self, name, key, amount=1.0):
         """
         Increment the value of ``key`` in hash ``name`` by floating ``amount``
         """
+        name = self._get_key(name)
         return self.redis.hincrbyfloat(name, key, amount)
 
     def hkeys(self, name):
         "Return the list of keys within hash ``name``"
-        return self.redis.hkeys(self._get_key(name))
+        name = self._get_key(name)
+        return self.redis.hkeys(name)
 
     def hlen(self, name):
         "Return the number of elements in hash ``name``"
-        return self.redis.hlen(self._get_key(name))
+        name = self._get_key(name)
+        return self.redis.hlen(name)
 
     def hset(self, name, key, value):
         """
         Set ``key`` to ``value`` within hash ``name``
         Returns 1 if HSET created a new field, otherwise 0
         """
+        name = self._get_key(name)
         return self.redis.hset(name, key, value)
 
     def hsetnx(self, name, key, value):
@@ -1266,6 +1276,7 @@ class RedisExtension:
         Set ``key`` to ``value`` within hash ``name`` if ``key`` does not
         exist.  Returns 1 if HSETNX created a field, otherwise 0.
         """
+        name = self._get_key(name)
         return self.redis.hsetnx(name, key, value)
 
     def hmset(self, name, mapping):
@@ -1273,14 +1284,17 @@ class RedisExtension:
         Set key to value within hash ``name`` for each corresponding
         key and value from the ``mapping`` dict.
         """
+        name = self._get_key(name)
         return self.redis.hmset(name, mapping)
 
     def hmget(self, name, keys, *args):
         "Returns a list of values ordered identically to ``keys``"
+        name = self._get_key(name)
         return self.redis.hmget(name, keys, *args)
 
     def hvals(self, name):
         "Return the list of values within hash ``name``"
+        name = self._get_key(name)
         return self.redis.hvals(name)
 
     def hstrlen(self, name, key):
