@@ -408,7 +408,7 @@ class RedisExtension:
 
         If timeout is 0, then block indefinitely.
         """
-        # TODO: Update keys
+        keys = self._get_keys(keys)
         return self.redis.blpop(keys, timeout)
 
     def brpop(self, keys, timeout=0):
@@ -422,7 +422,7 @@ class RedisExtension:
 
         If timeout is 0, then block indefinitely.
         """
-        # TODO: Update keys
+        keys = self._get_keys(keys)
         return self.redis.brpop(keys, timeout)
 
     def brpoplpush(self, src, dst, timeout=0):
@@ -443,7 +443,8 @@ class RedisExtension:
         Negative indexes are supported and will return an item at the
         end of the list
         """
-        return self.redis.lindex(self._get_key(name), index)
+        name = self._get_key(name)
+        return self.redis.lindex(name, index)
 
     def linsert(self, name, where, refvalue, value):
         """
@@ -465,11 +466,13 @@ class RedisExtension:
 
     def lpush(self, name, *values):
         "Push ``values`` onto the head of the list ``name``"
-        return self.redis.lpush(self._get_key(name), *values)
+        name = self._get_key(name)
+        return self.redis.lpush(name, *values)
 
     def lpushx(self, name, value):
         "Push ``value`` onto the head of the list ``name`` if ``name`` exists"
-        return self.redis.lpushx(self._get_key(name), value)
+        name = self._get_key(name)
+        return self.redis.lpushx(name, value)
 
     def lrange(self, name, start, end):
         """
@@ -491,11 +494,13 @@ class RedisExtension:
             count < 0: Remove elements equal to value moving from tail to head.
             count = 0: Remove all elements equal to value.
         """
-        return self.redis.lrem(self._get_key(name), count, value)
+        name = self._get_key(name)
+        return self.redis.lrem(name, count, value)
 
     def lset(self, name, index, value):
         "Set ``position`` of list ``name`` to ``value``"
-        return self.redis.lset(self._get_key(name), index, value)
+        name = self._get_key(name)
+        return self.redis.lset(name, index, value)
 
     def ltrim(self, name, start, end):
         """
@@ -520,11 +525,13 @@ class RedisExtension:
 
     def rpush(self, name, *values):
         "Push ``values`` onto the tail of the list ``name``"
-        return self.redis.rpush(self._get_key(name), *values)
+        name = self._get_key(name)
+        return self.redis.rpush(name, *values)
 
     def rpushx(self, name, value):
         "Push ``value`` onto the tail of the list ``name`` if ``name`` exists"
-        return self.redis.rpushx(self._get_key(name), value)
+        name = self._get_key(name)
+        return self.redis.rpushx(name, value)
 
     def sort(self, name, start=None, num=None, by=None, get=None,
              desc=False, alpha=False, store=None, groups=False):
