@@ -62,6 +62,8 @@ class RedisExtension:
 
         :param keys: multi keys
         """
+        if isinstance(keys, str):
+            return self._get_key(keys)
         return [self._get_key(k) for k in keys]
 
     def __getattr__(self, item):
@@ -605,8 +607,8 @@ class RedisExtension:
 
         ``count`` allows for hint the minimum number of returns
         """
-        # TODO: Update keys
-        return self.redis.sscan(self._get_key(name), cursor, match, count)
+        name = self._get_key(name)
+        return self.redis.sscan(name, cursor, match, count)
 
     def sscan_iter(self, name, match=None, count=None):
         """
@@ -617,8 +619,8 @@ class RedisExtension:
 
         ``count`` allows for hint the minimum number of returns
         """
-        # TODO: Update keys
-        return self.redis.sscan_iter(self._get_key(name), match, count)
+        name = self._get_key(name)
+        return self.redis.sscan_iter(name, match, count)
 
     def hscan(self, name, cursor=0, match=None, count=None):
         """
@@ -656,7 +658,8 @@ class RedisExtension:
 
         ``score_cast_func`` a callable used to cast the score return value
         """
-        return self.redis.zscan(self._get_key(name), cursor, match, count, score_cast_func)
+        name = self._get_key(name)
+        return self.redis.zscan(name, cursor, match, count, score_cast_func)
 
     def zscan_iter(self, name, match=None, count=None,
                    score_cast_func=float):
@@ -670,20 +673,24 @@ class RedisExtension:
 
         ``score_cast_func`` a callable used to cast the score return value
         """
-        return self.redis.zscan_iter(self._get_key(name), match, count, score_cast_func)
+        name = self._get_key(name)
+        return self.redis.zscan_iter(name, match, count, score_cast_func)
 
     # SET COMMANDS
     def sadd(self, name, *values):
         "Add ``value(s)`` to set ``name``"
-        return self.redis.sadd(self._get_key(name), *values)
+        name = self._get_key(name)
+        return self.redis.sadd(name, *values)
 
     def scard(self, name):
         "Return the number of elements in set ``name``"
-        return self.redis.scard(self._get_key(name))
+        name = self._get_key(name)
+        return self.redis.scard(name)
 
     def sdiff(self, keys, *args):
         "Return the difference of sets specified by ``keys``"
-        # TODO: Update keys
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sdiff(keys, *args)
 
     def sdiffstore(self, dest, keys, *args):
@@ -691,12 +698,15 @@ class RedisExtension:
         Store the difference of sets specified by ``keys`` into a new
         set named ``dest``.  Returns the number of keys in the new set.
         """
-        # TODO: Update keys
+        dest = self._get_key(dest)
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sdiffstore(dest, keys, *args)
 
     def sinter(self, keys, *args):
         "Return the intersection of sets specified by ``keys``"
-        # TODO: Update keys
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sinter(keys, *args)
 
     def sinterstore(self, dest, keys, *args):
@@ -704,7 +714,9 @@ class RedisExtension:
         Store the intersection of sets specified by ``keys`` into a new
         set named ``dest``.  Returns the number of keys in the new set.
         """
-        # TODO: Update keys
+        dest = self._get_key(dest)
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sinterstore(dest, keys, *args)
 
     def sismember(self, name, value):
