@@ -19,8 +19,8 @@ redis.init_app(app)
 
 
 if __name__ == "__main__":
-    redis.sadd("SET:K1", "V1", "V1", "V2")
-    redis.sadd("-SET:K2", "VV1", "VV1", "VV2")
+    redis.sadd("SET:K1", "V1", "V1", "V2", "VI3")
+    redis.sadd("-SET:K2", "VV1", "VV1", "VV2", "VI3")
 
     print(redis.scard("SET:K1"))
     print(redis.scard("-SET:K2"))
@@ -39,6 +39,19 @@ if __name__ == "__main__":
 
     print(redis.sdiffstore("SET:K3", "SET:K1", "-SET:K2"))
     print(redis.sdiffstore("-SET:K3", "SET:K1", "-SET:K2"))
+
+    print(redis.sinter("SET:K1", "-SET:K2"))
+    redis.sinterstore("-SET:K4", "SET:K1", "-SET:K2")
+
+    print(redis.sunion("SET:K1", "-SET:K2"))
+    redis.sunionstore("-SET:K5", "SET:K1", "-SET:K2")
+
+    print(redis.sismember("-SET:K2", "VV2"))
+    print(redis.sismember("SET:K1", "V1"))
+
+    redis.smove("SET:K1", "-SET:K2", "V1")
+    redis.srem("-SET:K2", "VV1")
+    redis.spop("-SET:K2")
 
     redis.expire("SET:K1", 60)
     redis.expire("-SET:K2", 60)

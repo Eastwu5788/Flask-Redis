@@ -721,7 +721,8 @@ class RedisExtension:
 
     def sismember(self, name, value):
         "Return a boolean indicating if ``value`` is a member of set ``name``"
-        return self.redis.sismember(self._get_key(name), value)
+        name = self._get_key(name)
+        return self.redis.sismember(name, value)
 
     def smembers(self, name):
         "Return all members of the set ``name``"
@@ -729,7 +730,9 @@ class RedisExtension:
 
     def smove(self, src, dst, value):
         "Move ``value`` from set ``src`` to set ``dst`` atomically"
-        return self.redis.smove(self._get_key(src), self._get_key(dst), value)
+        src = self._get_key(src)
+        dst = self._get_key(dst)
+        return self.redis.smove(src, dst, value)
 
     def spop(self, name, count=None):
         "Remove and return a random member of set ``name``"
@@ -751,7 +754,8 @@ class RedisExtension:
 
     def sunion(self, keys, *args):
         "Return the union of sets specified by ``keys``"
-        # TODO: Update keys
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sunion(keys, *args)
 
     def sunionstore(self, dest, keys, *args):
@@ -759,7 +763,9 @@ class RedisExtension:
         Store the union of sets specified by ``keys`` into a new
         set named ``dest``.  Returns the number of keys in the new set.
         """
-        # TODO: Update Keys
+        dest = self._get_key(dest)
+        keys = self._get_keys(keys)
+        args = self._get_keys(args)
         return self.redis.sunionstore(dest, keys, *args)
 
     def xack(self, name, groupname, *ids):
