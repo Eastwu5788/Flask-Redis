@@ -1013,8 +1013,8 @@ class RedisExtension:
         options, ZADD returns the number of new elements added to the sorted
         set.
         """
-        # TODO: Update keys
-        return self.redis.zadd(self._get_key(name), mapping, nx, xx, ch, incr)
+        name = self._get_key(name)
+        return self.redis.zadd(name, mapping, nx, xx, ch, incr)
 
     def zcard(self, name):
         "Return the number of elements in the sorted set ``name``"
@@ -1104,7 +1104,7 @@ class RedisExtension:
 
         ``score_cast_func`` a callable used to cast the score return value
         """
-        # TODO: Update keys
+        name = self._get_key(name)
         return self.redis.zrange(name, start, end, desc, withscores, score_cast_func)
 
     def zrangebylex(self, name, min, max, start=None, num=None):
@@ -1143,7 +1143,8 @@ class RedisExtension:
 
         `score_cast_func`` a callable used to cast the score return value
         """
-        return self.redis.zrangebyscore(self._get_key(name), min, max, start, num, withscores, score_cast_func)
+        name = self._get_key(name)
+        return self.redis.zrangebyscore(name, min, max, start, num, withscores, score_cast_func)
 
     def zrank(self, name, value):
         """
