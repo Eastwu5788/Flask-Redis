@@ -11,7 +11,7 @@ Install and update using pip:
 
 ::
 
-  pip install flask-redis
+  pip install flask-redis-ext
 
 A Simple Example
 ==================
@@ -33,17 +33,63 @@ A Simple Example
     redis.get("test")
 
 
+Multi Databases
+=================
+
+::
+
+    from flask import Flask
+    from flask_redis import Redis, K_RDS_DEFAULT_BIND
+
+    redis = Redis()
+    app = Flask(__name__)
+
+    app.config[K_RDS_DEFAULT_BIND] = "default"
+    app.config["REDIS_BINDS"] = {
+        "default": {
+            "REDIS_PREFIX": "DEFAULT:",
+            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+        },
+        "DB12": {
+            "REDIS_PREFIX": "EG12:",
+            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+        },
+        "DB13": {
+            "REDIS_PREFIX": "EG13:",
+            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/13",
+        }
+    }
+    redis.init_app(app)
+
+    # use default database
+    redis.set("key1", "value1)
+    # use db12
+    redis["DB12"].set("key1", "value1")
+
+
+
 Documents
 ===========
 
+Flask-redis manual could be found at:
 
 
-Contributing
-==============
+Coffee
+=========
 
+Please give me a cup of coffee, thank you!
 
+BTC: 1657DRJUyfMyz41pdJfpeoNpz23ghMLVM3
+
+ETH: 0xb098600a9a4572a4894dce31471c46f1f290b087
 
 
 Links
 ======
+
+* Documentaion: https://pre-request.readthedocs.io/en/master/index.html
+* Release: https://pypi.org/project/pre-request/
+* Code: https://github.com/Eastwu5788/pre-request
+* Issue tracker: https://github.com/Eastwu5788/pre-request/issues
+* Test status: https://coveralls.io/github/Eastwu5788/pre-request
 

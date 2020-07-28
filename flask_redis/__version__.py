@@ -5,7 +5,7 @@
 # @Author: 'Wu Dong <wudong@eastwu.cn>'
 # @Time: '2020-06-24 15:52'
 __author__ = 'Wu Dong <wudong@eastwu.cn>'
-__title__ = 'flask_redis'
+__title__ = 'flask-redis-ext'
 __description__ = 'Flask extension for redis'
 __url__ = 'https://github.com/Eastwu5788/flask-redis'
 __version__ = '0.0.1'
