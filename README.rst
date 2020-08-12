@@ -33,8 +33,8 @@ A Simple Example
     redis.get("test")
 
 
-Multi Databases
-=================
+Multiple Databases
+====================
 
 ::
 
@@ -66,6 +66,25 @@ Multi Databases
     # use db12
     redis["DB12"].set("key1", "value1")
 
+
+Support Parameter
+====================
+
+======================   ==============================   ==============================================
+     Parameter                    Explain                     Example
+======================   ==============================   ==============================================
+   K_RDS_PREFIX             storage key prefix                    app.config["REDIS_PREFIX"] = "EG:"
+   K_RDS_BINDS              bind multi databases                            --
+   K_RDS_URL                    redis url                               redis://xx
+K_RDS_DEFAULT_BIND         default redis bind key           app.config[K_RDS_DEFAULT_BIND] = "default"
+======================   ==============================   ==============================================
+
+Redis Parameter
+================
+
+We support all of the origin redis init parameter.
+`socket_timeout` should be config as `REDIS_SOCKET_TIMEOUT`.
+`encoding` should be config as `REDIS_ENCODING`. All other parameters follow the same rules.
 
 
 Documents
