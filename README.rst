@@ -25,7 +25,7 @@ A Simple Example
     app = Flask(__name__)
 
     app.config["REDIS_PREFIX"] = "EG:"
-    app.config["REDIS_URL"] = "redis://:LSkdf378M@192.168.1.181:16379/9"
+    app.config["REDIS_URL"] = "redis://:password@host:port/db"
     app.config["REDIS_DECODE_RESPONSES"] = True
     app.config["REDIS_DB"] = 9
     redis.init_app(app)
@@ -48,15 +48,15 @@ Multiple Databases
     app.config["REDIS_BINDS"] = {
         "default": {
             "REDIS_PREFIX": "DEFAULT:",
-            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+            "REDIS_URL": "redis://:password@host:port/db",
         },
         "DB12": {
             "REDIS_PREFIX": "EG12:",
-            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+            "REDIS_URL": "redis://:password@host:port/db",
         },
         "DB13": {
             "REDIS_PREFIX": "EG13:",
-            "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/13",
+            "REDIS_URL": "redis://:password@host:port/db",
         }
     }
     redis.init_app(app)
