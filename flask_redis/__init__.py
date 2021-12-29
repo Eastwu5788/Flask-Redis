@@ -14,6 +14,7 @@ from inspect import getfullargspec
 from functools import partial, wraps
 # 3p
 from redis import StrictRedis, ConnectionPool
+from redis.commands.core import HashCommands
 # project
 from .macro import (
     K_INTERNAL_IGNORE_CACHE,
@@ -89,6 +90,7 @@ class _RedisExt(StrictRedis):
         else:
             super().__init__(**kwargs)
 
+        self._hash_commands = {v for v in dir(HashCommands) if not v.startswith("_")}
         self.__partial_methods()
 
     def __partial_methods(self):
@@ -99,29 +101,47 @@ class _RedisExt(StrictRedis):
                 continue
 
             # ignore special function
-            if method in {"cached", "incr"}:
+            if method in {"cached", "incr", "decr"}:
                 continue
 
             func = getattr(self, method)
             try:
-                args_key = getfullargspec(func).args
+                info = getfullargspec(func)
+                args_key, var_args = info.args, info.varargs
             except TypeError:
                 continue
 
-            valid_keys = {"name", "key", "src", "dst", "dest", "names", "keys"} & set(args_key)
+            valid_keys = {"name", "key", "src", "dst", "dest", "names", "keys"} & set(args_key + [var_args])
             if not valid_keys:
                 continue
 
             setattr(self, "__old_%s" % method, func)
-            setattr(self, method, partial(self.__decorator, method, args_key[1:]))
+            setattr(self, method, partial(self.__decorator, method, args_key[1:], var_args))
 
-    def __decorator(self, func, keys, *args, **kwargs):
+    def __decorator(self, func, keys, var_args, *args, **kwargs):
         kw = dict(zip(keys, args), **kwargs)
+        # check *args exists
+        if var_args and len(keys) < len(args):
+            kw[var_args] = args[len(keys):]
+
+        rebuild_keys = {"name", "key", "names", "keys", "src", "dst", "dest"}
+
+        # rebuild cache keys
         for k, v in kw.items():
-            if k in {"name", "key", "src", "dst", "dest"}:
-                kw[k] = self.__get_key(v)
-            if k in {"names", "keys"}:
-                kw[k] = self.__get_keys(v)
+            # ignore hash command sub key rebuild
+            if func in self._hash_commands and k in {"key", "keys"}:
+                continue
+
+            # rebuild cache key to add redis prefix
+            if k in rebuild_keys or (k == "args" and len(set(keys) - rebuild_keys) == 0):
+                kw[k] = self.__get_key(v) if isinstance(v, str) else self.__get_keys(v)
+
+        # add *args to func call
+        if var_args and var_args in kw:
+            new_args = [kw.pop(k) for k in keys] + list(kw.pop(var_args))
+            return getattr(self, "__old_%s" % func)(*new_args, **kw)
+
+        # func call for only kw
         return getattr(self, "__old_%s" % func)(**kw)
 
     def __get_key(self, key):
@@ -148,16 +168,6 @@ class _RedisExt(StrictRedis):
         if isinstance(keys, str):
             return self.__get_key(keys)
         return [self.__get_key(k) for k in keys]
-
-    def delete(self, *names):
-        """Delete one or more keys specified by ``names``
-        """
-        super(_RedisExt, self).delete(*self.__get_keys(names))
-
-    def exists(self, *names):
-        """ Returns the number of ``names`` that exist
-        """
-        super(_RedisExt, self).exists(*self.__get_keys(names))
 
     def cached(self, key: str, timeout: t.Optional[int] = None) -> t.Callable:
         """ Auto cache function response with special key
