@@ -14,7 +14,11 @@ from inspect import getfullargspec
 from functools import partial, wraps
 # 3p
 from redis import StrictRedis, ConnectionPool
-from redis.commands.core import HashCommands
+from redis.commands.core import (
+    ACLCommands,
+    ManagementCommands,
+    HashCommands,
+)
 # project
 from .macro import (
     K_INTERNAL_IGNORE_CACHE,
@@ -68,6 +72,18 @@ class JSONEncoder(json.JSONEncoder):
 
 class _RedisExt(StrictRedis):
 
+    __valid_keys = {
+        "name",
+        "key",
+        "names",
+        "keys",
+        "src",
+        "dst",
+        "dest",
+        "mapping",
+        "store"
+    }
+
     def __init__(self, config):
         """ Initialize redis client with special config
         """
@@ -91,7 +107,17 @@ class _RedisExt(StrictRedis):
             super().__init__(**kwargs)
 
         self._hash_commands = {v for v in dir(HashCommands) if not v.startswith("_")}
+        self._ignore_commands = self.__ignore_commands()
+
         self.__partial_methods()
+
+    @staticmethod
+    def __ignore_commands():
+        """ Find commend should be ignored
+        """
+        commands = {v for v in dir(ACLCommands) if not v.startswith("_")}
+        commands.update({v for v in dir(ManagementCommands) if not v.startswith("_")})
+        return commands
 
     def __partial_methods(self):
         """ Bind origin redis method to instance
@@ -104,6 +130,10 @@ class _RedisExt(StrictRedis):
             if method in {"cached", "incr", "decr"}:
                 continue
 
+            # ignore acl commands
+            if method in self._ignore_commands:
+                continue
+
             func = getattr(self, method)
             try:
                 info = getfullargspec(func)
@@ -111,7 +141,7 @@ class _RedisExt(StrictRedis):
             except TypeError:
                 continue
 
-            valid_keys = {"name", "key", "src", "dst", "dest", "names", "keys"} & set(args_key + [var_args])
+            valid_keys = self.__valid_keys & set(args_key + [var_args])
             if not valid_keys:
                 continue
 
@@ -124,16 +154,18 @@ class _RedisExt(StrictRedis):
         if var_args and len(keys) < len(args):
             kw[var_args] = args[len(keys):]
 
-        rebuild_keys = {"name", "key", "names", "keys", "src", "dst", "dest"}
-
         # rebuild cache keys
         for k, v in kw.items():
             # ignore hash command sub key rebuild
-            if func in self._hash_commands and k in {"key", "keys"}:
+            if func in self._hash_commands and k in {"key", "keys", "mapping", "args"}:
+                continue
+
+            if k == "mapping" and isinstance(v, dict):
+                kw[k] = {self.__get_key(sk): sv for sk, sv in v.items()}
                 continue
 
             # rebuild cache key to add redis prefix
-            if k in rebuild_keys or (k == "args" and len(set(keys) - rebuild_keys) == 0):
+            if k in self.__valid_keys or (k == "args" and len(set(keys) - self.__valid_keys) == 0):
                 kw[k] = self.__get_key(v) if isinstance(v, str) else self.__get_keys(v)
 
         # add *args to func call

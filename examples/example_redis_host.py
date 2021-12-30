@@ -13,10 +13,10 @@ app = Flask(__name__)
 
 
 app.config["REDIS_PREFIX"] = "EG:"
-app.config["REDIS_HOST"] = "192.168.1.181"
-app.config["REDIS_PORT"] = 16379
-app.config["REDIS_DB"] = 9
-app.config["REDIS_PASSWORD"] = "LSkdf378M"
+app.config["REDIS_HOST"] = "127.0.0.1"
+app.config["REDIS_PORT"] = 6379
+app.config["REDIS_DB"] = 0
+app.config["REDIS_PASSWORD"] = ""
 redis.init_app(app)
 
 
