@@ -201,4 +201,4 @@ class TestList:
         assert redis.sort("-LIST:K1", store="-LIST:SORT:K2")
         assert redis.llen("-LIST:SORT:K2") == 6
 
-        redis.delete("LIST:K1", "-LIST:K2", "LIST:SORT:K1", "-LIST:SORT:K2")
+        redis.delete("LIST:K1", "-LIST:K1", "LIST:SORT:K1", "-LIST:SORT:K2")
