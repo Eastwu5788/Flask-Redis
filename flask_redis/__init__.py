@@ -160,6 +160,10 @@ class _RedisExt(StrictRedis):
             if func in self._hash_commands and k in {"key", "keys", "mapping", "args"}:
                 continue
 
+            # ignore zadd mapping params
+            if k == "mapping" and func in {"zadd"}:
+                continue
+
             if k == "mapping" and isinstance(v, dict):
                 kw[k] = {self.__get_key(sk): sv for sk, sv in v.items()}
                 continue
