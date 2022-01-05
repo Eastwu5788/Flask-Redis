@@ -16,12 +16,14 @@ from functools import partial, wraps
 from redis import StrictRedis, ConnectionPool
 from redis.commands.core import (
     ACLCommands,
-    ManagementCommands,
     HashCommands,
+    ManagementCommands,
+    ModuleCommands,
+    PubSubCommands,
+    ScriptCommands
 )
 # project
 from .macro import (
-    K_INTERNAL_IGNORE_CACHE,
     K_RDS_BINDS,
     K_RDS_IGNORE_CACHE,
     K_RDS_PREFIX,
@@ -81,7 +83,8 @@ class _RedisExt(StrictRedis):
         "dst",
         "dest",
         "mapping",
-        "store"
+        "store",
+        "sources"
     }
 
     def __init__(self, config):
@@ -89,6 +92,7 @@ class _RedisExt(StrictRedis):
         """
         self._config = config
         self._rds_prefix = self._config.pop(K_RDS_PREFIX, None)
+        self._ignore_cached = self._config.pop(K_RDS_IGNORE_CACHE,  None)
 
         # Transform all of the config key with 'REDIS_' to init params
         # e.g. REDIS_HOST -> host
@@ -115,8 +119,9 @@ class _RedisExt(StrictRedis):
     def __ignore_commands():
         """ Find commend should be ignored
         """
-        commands = {v for v in dir(ACLCommands) if not v.startswith("_")}
-        commands.update({v for v in dir(ManagementCommands) if not v.startswith("_")})
+        commands = set()
+        for cmd in [ACLCommands, ManagementCommands, ModuleCommands, PubSubCommands, ScriptCommands]:
+            commands.update({v for v in dir(cmd) if not v.startswith("_")})
         return commands
 
     def __partial_methods(self):
@@ -249,8 +254,8 @@ class _RedisExt(StrictRedis):
                 # 优先读取缓存的结果
                 use_cache, cache_key = kw.get("cache"), key.format(**_fmt_kwargs(kw))
                 # global variables have higher priority than local variables for only ignore cache
-                if K_INTERNAL_IGNORE_CACHE in self._config:
-                    use_cache = self._config[K_INTERNAL_IGNORE_CACHE]
+                if isinstance(self._ignore_cached, bool):
+                    use_cache = False if self._ignore_cached else True
 
                 if use_cache:
                     cache_rst = self.get(cache_key)
@@ -309,25 +314,16 @@ class Redis(_RedisExt):
             base_config.update(config)
         self.config = base_config
 
-        ignore_cache = self.config.pop(K_RDS_IGNORE_CACHE, None)
-
         # If you use multiple Redis databases within the same application,
         # you should create a separate client instance (and possibly a separate connection pool) for each database.
         rds_binds = self.config.pop(K_RDS_BINDS, None)
         if rds_binds and isinstance(rds_binds, dict):
             for key, cfg in rds_binds.items():
-                # set up to sub databases
-                if ignore_cache is not None and K_INTERNAL_IGNORE_CACHE not in cfg:
-                    cfg[K_INTERNAL_IGNORE_CACHE] = ignore_cache
-
                 if key == "DEFAULT":
                     super().__init__(cfg)
                 else:
                     self.instances[key] = _RedisExt(cfg)
         else:
-            if ignore_cache is not None and K_INTERNAL_IGNORE_CACHE not in self.config:
-                self.config[K_INTERNAL_IGNORE_CACHE] = ignore_cache
-
             # Redis client instances can safely be shared between threads.
             super().__init__(self.config)
 
