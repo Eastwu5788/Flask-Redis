@@ -143,8 +143,8 @@ class TestSet:
         redis.sadd("SET:K1", "V1", "V2", "U2", "U3")
         redis.sadd("-SET:K2", "T1", "T2", "U1", "U2")
 
-        assert redis.sscan("SET:K1", 0, match="V*") == (0, ["V1", "V2"])
-        assert redis.sscan("-SET:K2", 0, match="T*") == (0, ["T1", "T2"])
+        assert redis.sscan("SET:K1", 0, match="V*") == (0, ["V1", "V2"]) or (0, ["V2", "V1"])
+        assert redis.sscan("-SET:K2", 0, match="T*") == (0, ["T1", "T2"]) or (0, ["T2", "T1"])
 
         redis.delete("SET:K1", "-SET:K2")
 
