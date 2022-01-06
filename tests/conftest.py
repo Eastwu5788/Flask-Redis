@@ -23,3 +23,31 @@ def redis():
     rds = Redis()
     rds.init_app(app)
     return rds
+
+
+@pytest.fixture
+def mredis():
+    """ buind multi redis client
+    """
+    app = Flask(__name__)
+    app.config["REDIS_DECODE_RESPONSES"] = True
+    app.config["REDIS_PREFIX"] = "EGM:"
+    app.config["REDIS_DEFAULT_BIND_KEY"] = "DB0"
+
+    app.config["REDIS_BINDS"] = {
+        "DB0": "redis://:@127.0.0.1:6379/0",
+        "DB1": {
+            "REDIS_PREFIX": "EGM2:",
+            "REDIS_URL": "redis://:@127.0.0.1:6379/1"
+        },
+        "DB2": {
+            "REDIS_HOST": "127.0.0.1",
+            "REDIS_PORT": 6379,
+            "REDIS_DB": 2,
+            "REDIS_PASSWORD": None
+        }
+    }
+
+    rds = Redis()
+    rds.init_app(app)
+    return rds
