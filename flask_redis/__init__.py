@@ -13,3 +13,4 @@ from .macro import (
 )
 from .cluster import RedisCluster
 from .redis import Redis
+from .sentinel import Sentinel
