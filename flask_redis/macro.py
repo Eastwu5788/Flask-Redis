@@ -11,6 +11,8 @@ K_RDS_BINDS = "REDIS_BINDS"
 K_RDS_PREFIX = "REDIS_PREFIX"
 # redis url
 K_RDS_URL = "REDIS_URL"
+# redis connection pool
+K_RDS_CONNECTION_POOL = "REDIS_CONNECTION_POOL"
 # redis default bind key
 K_RDS_DEFAULT_BIND_KEY = "REDIS_DEFAULT_BIND_KEY"
 # ignore cache

@@ -12,6 +12,7 @@ from redis import Redis, ConnectionPool
 from .ext import BaseExtensions
 from .macro import (
     K_RDS_BINDS,
+    K_RDS_CONNECTION_POOL,
     K_RDS_DEFAULT_BIND_KEY,
     K_RDS_IGNORE_CACHE,
     K_RDS_PREFIX,
@@ -22,7 +23,7 @@ if t.TYPE_CHECKING:
     from flask import Flask
 
 
-class _RedisExt(Redis, BaseExtensions):
+class RedisExt(Redis, BaseExtensions):
 
     def __init__(self, config):
         """ Initialize redis client with special config
@@ -31,15 +32,17 @@ class _RedisExt(Redis, BaseExtensions):
         self._rds_prefix = self._config.pop(K_RDS_PREFIX, None)
         self._ignore_cached = self._config.pop(K_RDS_IGNORE_CACHE,  None)
 
-        rds_url = config.pop(K_RDS_URL, None)
+        rds_url, pool = config.pop(K_RDS_URL, None), config.pop(K_RDS_CONNECTION_POOL, None)
         # Transform all of the config key with 'REDIS_' to init params
         # e.g. REDIS_HOST -> host
         kwargs = {k[6:].lower(): v for k, v in config.items() if k.startswith("REDIS_")}
         if rds_url:
             connection_pool = ConnectionPool.from_url(rds_url, **kwargs)
-            super().__init__(connection_pool=connection_pool)
+            super(RedisExt, self).__init__(connection_pool=connection_pool)
+        elif pool:
+            super(RedisExt, self).__init__(connection_pool=pool)
         else:
-            super().__init__(**kwargs)
+            super(RedisExt, self).__init__(**kwargs)
 
         self._partial_methods()
 
@@ -50,7 +53,7 @@ class _RedisExt(Redis, BaseExtensions):
         return self.get(key)
 
 
-class Redis(_RedisExt):
+class Redis(RedisExt):
 
     def __init__(  # pylint: disable=super-init-not-called
             self,
@@ -96,7 +99,7 @@ class Redis(_RedisExt):
                 if key == dft_bind_key:
                     super().__init__(cfg)
                 else:
-                    self.instances[key] = _RedisExt(cfg)
+                    self.instances[key] = RedisExt(cfg)
         else:
             # Redis client instances can safely be shared between threads.
             super().__init__(config)
@@ -104,10 +107,10 @@ class Redis(_RedisExt):
         self.app = app
         self.app.extensions["Redis"] = self
 
-    def __getattr__(self, item) -> "_RedisExt":
+    def __getattr__(self, item) -> "RedisExt":
         return self[item]
 
-    def __getitem__(self, item) -> "_RedisExt":
+    def __getitem__(self, item) -> "RedisExt":
         """
         :rtype: RedisExtension
         """
