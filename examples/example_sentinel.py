@@ -17,7 +17,9 @@ app.config["REDIS_SENTINELS"] = [("192.168.1.189", 18001)]
 app.config["REDIS_SENTINEL_KWARGS"] = {
     "socket_timeout": 0.1
 }
-app.config["REDIS_DECODE_RESPONSES"] = True
+app.config["REDIS_CONNECTION_KWARGS"] = {
+    "decode_responses": True
+}
 redis.init_app(app)
 
 

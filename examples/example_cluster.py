@@ -19,5 +19,18 @@ redis.init_app(app)
 
 
 if __name__ == "__main__":
-    redis.set("K1:T1", "V1")
-    print(redis.get("K1:T1"))
+    redis.zadd("-{CLU:ZSORT:K2}:1", mapping={
+        "V1": 13,
+        "V2": 23,
+        "V3": 9,
+    })
+    redis.zadd("-{CLU:ZSORT:K2}:2", mapping={
+        "T1": 56,
+        "V2": 23,
+        "T3": 39,
+    })
+
+    assert redis.zdiff(["-{CLU:ZSORT:K2}:1", "-{CLU:ZSORT:K2}:2"], withscores=False) == ["V3", "V1"]
+    assert redis.zdiff(["-{CLU:ZSORT:K2}:2", "-{CLU:ZSORT:K2}:1"], withscores=True) == ["T3", '39', "T1", '56']
+
+    redis.delete("-{CLU:ZSORT:K2}:1", "-{CLU:ZSORT:K2}:2")

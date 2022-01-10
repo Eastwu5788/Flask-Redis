@@ -8,7 +8,10 @@
 import pytest
 from flask import Flask
 # project
-from flask_redis import Redis
+from flask_redis import (
+    Redis,
+    RedisCluster
+)
 
 
 @pytest.fixture
@@ -49,5 +52,19 @@ def mredis():
     }
 
     rds = Redis()
+    rds.init_app(app)
+    return rds
+
+
+@pytest.fixture
+def cluster():
+    """ build redis cluster
+    """
+    app = Flask(__name__)
+    app.config["REDIS_DECODE_RESPONSES"] = True
+    app.config["REDIS_PREFIX"] = "CLU:"
+    app.config["REDIS_URL"] = "redis://:@127.0.0.1:7001/0"
+
+    rds = RedisCluster()
     rds.init_app(app)
     return rds
