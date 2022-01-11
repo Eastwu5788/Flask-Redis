@@ -13,7 +13,10 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 
 
-requires = []
+requires = [
+    "flask>=2.0.2",
+    "redis>=4.1.0"
+]
 
 
 about = {}
