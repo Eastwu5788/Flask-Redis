@@ -1,13 +1,13 @@
 .. py:currentmodule:: flask-redis
 
-Version 1.0.0 (UnReleased)
+Version 1.0.1 (UnReleased)
+------------------------------
+
+- Support multi Cluster and multi Sentinel
+- Support custom decode and encode protocol
+
+Version 1.0.0 Released
 ---------------------------
 
-- 提供Sentinel支持
-- 剔除FlaskRedis，支持Flask多线程环境
-
-Version 0.0.5 (UnReleased)
----------------------------
-
-- 提供多Redis库支持
-- 提供Key前缀支持
+- Support Cluster and Sentinel mode
+- System reconstruction

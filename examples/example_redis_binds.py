@@ -15,15 +15,15 @@ app.config[K_RDS_DEFAULT_BIND] = "default"
 app.config["REDIS_BINDS"] = {
     "default": {
         "REDIS_PREFIX": "DEFAULT:",
-        "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+        "REDIS_URL": "redis://:@127.0.0.1:6379/0",
     },
     "DB12": {
         "REDIS_PREFIX": "EG12:",
-        "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/12",
+        "REDIS_URL": "redis://:@127.0.0.1:6379/12",
     },
     "DB13": {
         "REDIS_PREFIX": "EG13:",
-        "REDIS_URL": "redis://:LSkdf378M@192.168.1.181:16379/13",
+        "REDIS_URL": "redis://:@127.0.0.1:6379/23",
     }
 }
 redis.init_app(app)

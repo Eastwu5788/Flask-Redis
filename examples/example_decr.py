@@ -12,9 +12,9 @@ app = Flask(__name__)
 
 
 app.config["REDIS_PREFIX"] = "EG:"
-app.config["REDIS_URL"] = "redis://:LSkdf378M@192.168.1.181:16379/9"
+app.config["REDIS_URL"] = "redis://:@127.0.0.1:6379/0"
 app.config["REDIS_DECODE_RESPONSES"] = True
-app.config["REDIS_DB"] = 9
+app.config["REDIS_DB"] = 0
 redis.init_app(app)
 
 
