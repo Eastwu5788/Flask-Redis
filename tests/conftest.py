@@ -78,7 +78,7 @@ def master():
     app = Flask(__name__)
 
     app.config["REDIS_PREFIX"] = "SEN:"
-    app.config["REDIS_SENTINELS"] = [("192.168.1.189", 18001)]
+    app.config["REDIS_SENTINELS"] = [("127.0.0.1", 8001)]
     app.config["REDIS_SENTINEL_KWARGS"] = {
         "socket_timeout": 0.1
     }
@@ -98,7 +98,7 @@ def slave():
     app = Flask(__name__)
 
     app.config["REDIS_PREFIX"] = "SEN:"
-    app.config["REDIS_SENTINELS"] = [("192.168.1.189", 18001)]
+    app.config["REDIS_SENTINELS"] = [("127.0.0.1", 8001)]
     app.config["REDIS_SENTINEL_KWARGS"] = {
         "socket_timeout": 2,
         "socket_connect_timeout": 1

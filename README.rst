@@ -45,7 +45,6 @@ Multiple Databases
 
     app.config["REDIS_BINDS"] = {
         "default": {
-            "REDIS_PREFIX": "DEFAULT:",
             "REDIS_URL": "redis://:password@host:port/db",
         },
         "DB12": {
@@ -207,7 +206,7 @@ to config connection info. You will get details about sentinel mode parameter at
 Links
 ======
 
-* Release: https://pypi.org/project/pre-request/
+* Release: https://pypi.org/project/flask-redis-ext/
 * Code: https://github.com/Eastwu5788/Flask-Redis
 * Issue tracker: https://github.com/Eastwu5788/Flask-Redis/issues
 * Test status: https://coveralls.io/github/Eastwu5788/Flask-Redis

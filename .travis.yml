@@ -1,0 +1,23 @@
+language: python
+
+python:
+  - 3.6
+
+services:
+  - docker
+
+#before_install:
+#  - docker run -p 6390:6379 redis:latest
+#  - docker run -e "IP=0.0.0.0" -p 7001-7006:7000-7005 grokzen/redis-cluster:latest
+#  - docker run -e "IP=0.0.0.0" -e "SENTINEL=true" -p 5000-5010 -p 8001-8006:7000-7005 grokzen/redis-cluster:latest
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - flake8 flask_redis
+  - pylint flask_redis
+#  - coverage run -m pytest -p no:warnings
+
+after_script:
+  - coveralls
