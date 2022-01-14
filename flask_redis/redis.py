@@ -20,10 +20,10 @@ from .macro import (
 )
 # check
 if t.TYPE_CHECKING:
-    from flask import Flask
+    from flask import Flask  # pylint: disable=unused-import
 
 
-class RedisExt(Redis, BaseExtensions):
+class RedisExt(Redis, BaseExtensions):  # pylint: disable=too-many-ancestors
 
     def __init__(self, config):
         """ Initialize redis client with special config
@@ -38,11 +38,11 @@ class RedisExt(Redis, BaseExtensions):
         kwargs = {k[6:].lower(): v for k, v in config.items() if k.startswith("REDIS_")}
         if rds_url:
             connection_pool = ConnectionPool.from_url(rds_url, **kwargs)
-            super(RedisExt, self).__init__(connection_pool=connection_pool)
+            super().__init__(connection_pool=connection_pool)
         elif pool:
-            super(RedisExt, self).__init__(connection_pool=pool)
+            super().__init__(connection_pool=pool)
         else:
-            super(RedisExt, self).__init__(**kwargs)
+            super().__init__(**kwargs)
 
         self._partial_methods()
 
@@ -53,7 +53,7 @@ class RedisExt(Redis, BaseExtensions):
         return self.get(key)
 
 
-class Redis(RedisExt):
+class Redis(RedisExt):  # pylint: disable=too-many-ancestors, function-redefined
 
     def __init__(  # pylint: disable=super-init-not-called
             self,
@@ -65,7 +65,7 @@ class Redis(RedisExt):
         :param app: mask application
         :param config: config for mask redis
         """
-        self.instances = dict()
+        self.instances = {}
 
         if app is not None:
             self.app = app
@@ -94,7 +94,7 @@ class Redis(RedisExt):
                 elif isinstance(value, str):
                     cfg[K_RDS_URL] = value
                 else:
-                    raise TypeError("%s sub database items must be type of string or dict" % K_RDS_BINDS)
+                    raise TypeError(f"{K_RDS_BINDS} sub database items must be type of string or dict")
 
                 if key == dft_bind_key:
                     super().__init__(cfg)
@@ -116,7 +116,7 @@ class Redis(RedisExt):
         """
         obj = self.instances.get(item)
         if obj is None:
-            raise KeyError("Cannot read db with name '%s'" % item)
+            raise KeyError(f"Cannot read db with name '{item}'")
         return obj
 
     def close(self):

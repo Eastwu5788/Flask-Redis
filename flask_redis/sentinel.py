@@ -14,19 +14,19 @@ from redis import SentinelConnectionPool
 from .redis import RedisExt
 # type
 if t.TYPE_CHECKING:
-    from flask import Flask
+    from flask import Flask  # pylint: disable=unused-import
 
 
 class SentinelExt(_Sentinel):
 
-    def __init__(
+    def __init__(  # pylint: disable=super-init-not-called
             self,
             config: dict
     ):
-        sentinels = config.pop("REDIS_SENTINELS", list())
+        sentinels = config.pop("REDIS_SENTINELS", [])
         min_other_sentinels = config.pop("REDIS_MIN_OTHER_SENTINELS", 0)
         sentinel_kwargs = config.pop("REDIS_SENTINEL_KWARGS", None)
-        connection_kwargs = config.pop("REDIS_CONNECTION_KWARGS", dict())
+        connection_kwargs = config.pop("REDIS_CONNECTION_KWARGS", {})
 
         # if sentinel_kwargs isn't defined, use the socket_* options from
         # connection_kwargs
@@ -36,12 +36,12 @@ class SentinelExt(_Sentinel):
             }
         self.sentinel_kwargs = sentinel_kwargs
 
-        self.sentinels = list()
+        self.sentinels = []
         for hostname, port in sentinels:
             cfg = deepcopy(config)
             cfg["REDIS_HOST"] = hostname
             cfg["REDIS_PORT"] = port
-            cfg.update({"REDIS_%s" % k.upper(): v for k, v in self.sentinel_kwargs.items()})
+            cfg.update({f"REDIS_{k.upper()}": v for k, v in self.sentinel_kwargs.items()})
             self.sentinels.append(RedisExt(cfg))
 
         self.min_other_sentinels = min_other_sentinels

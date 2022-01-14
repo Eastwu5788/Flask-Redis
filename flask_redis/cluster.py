@@ -16,10 +16,10 @@ from .macro import (
 )
 # type
 if t.TYPE_CHECKING:
-    from flask import Flask
+    from flask import Flask  # pylint: disable=unused-import
 
 
-class _RedisClusterExt(Redis, BaseExtensions):
+class _RedisClusterExt(Redis, BaseExtensions):  # pylint: disable=too-many-ancestors
 
     def __init__(self, config):
         """ Initialize redis client with special config
@@ -40,7 +40,7 @@ class _RedisClusterExt(Redis, BaseExtensions):
         return self.set(key, value, timeout)
 
 
-class RedisCluster(_RedisClusterExt):
+class RedisCluster(_RedisClusterExt):  # pylint: disable=too-many-ancestors
 
     def __init__(  # pylint: disable=super-init-not-called
             self,

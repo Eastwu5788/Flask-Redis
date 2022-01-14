@@ -66,9 +66,9 @@ disable=
     bad-str-strip-call,
     broad-except,
     arguments-differ,
-    fixme,
     useless-super-delegation,
     useless-object-inheritance,
+    abstract-method
 
 
 [REPORTS]
