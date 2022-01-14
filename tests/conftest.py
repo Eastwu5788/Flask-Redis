@@ -21,7 +21,7 @@ def redis():
     """
     app = Flask(__name__)
     app.config["REDIS_PREFIX"] = "EG:"
-    app.config["REDIS_URL"] = "redis://:@127.0.0.1:6390/0"
+    app.config["REDIS_URL"] = "redis://:@127.0.0.1:6379/0"
     app.config["REDIS_DECODE_RESPONSES"] = True
 
     rds = Redis()
@@ -39,14 +39,14 @@ def mredis():
     app.config["REDIS_DEFAULT_BIND_KEY"] = "DB0"
 
     app.config["REDIS_BINDS"] = {
-        "DB0": "redis://:@127.0.0.1:6390/0",
+        "DB0": "redis://:@127.0.0.1:6379/0",
         "DB1": {
             "REDIS_PREFIX": "EGM2:",
-            "REDIS_URL": "redis://:@127.0.0.1:6390/1"
+            "REDIS_URL": "redis://:@127.0.0.1:6379/1"
         },
         "DB2": {
             "REDIS_HOST": "127.0.0.1",
-            "REDIS_PORT": 6390,
+            "REDIS_PORT": 6379,
             "REDIS_DB": 2,
             "REDIS_PASSWORD": None
         }
@@ -64,7 +64,7 @@ def cluster():
     app = Flask(__name__)
     app.config["REDIS_DECODE_RESPONSES"] = True
     app.config["REDIS_PREFIX"] = "CLU:"
-    app.config["REDIS_URL"] = "redis://:@127.0.0.1:7001/0"
+    app.config["REDIS_URL"] = "redis://:@localhost:16379/0"
 
     rds = RedisCluster()
     rds.init_app(app)
@@ -78,27 +78,7 @@ def master():
     app = Flask(__name__)
 
     app.config["REDIS_PREFIX"] = "SEN:"
-    app.config["REDIS_SENTINELS"] = [("192.168.1.189", 18001)]
-    app.config["REDIS_SENTINEL_KWARGS"] = {
-        "socket_timeout": 0.1
-    }
-    app.config["REDIS_CONNECTION_KWARGS"] = {
-        "decode_responses": True
-    }
-
-    rds = Sentinel()
-    rds.init_app(app)
-    return rds.master_for("mymaster")
-
-
-@pytest.fixture
-def slave():
-    """ build redis sentinel
-    """
-    app = Flask(__name__)
-
-    app.config["REDIS_PREFIX"] = "SEN:"
-    app.config["REDIS_SENTINELS"] = [("192.168.1.189", 18001)]
+    app.config["REDIS_SENTINELS"] = [("localhost", 26379), ("localhost", 26380), ("localhost", 26381)]
     app.config["REDIS_SENTINEL_KWARGS"] = {
         "socket_timeout": 2,
         "socket_connect_timeout": 1
@@ -109,4 +89,25 @@ def slave():
 
     rds = Sentinel()
     rds.init_app(app)
-    return rds.slave_for("mymaster")
+    return rds.master_for("redis-py-test")
+
+
+@pytest.fixture
+def slave():
+    """ build redis sentinel
+    """
+    app = Flask(__name__)
+
+    app.config["REDIS_PREFIX"] = "SEN:"
+    app.config["REDIS_SENTINELS"] = [("localhost", 26379), ("localhost", 26380), ("localhost", 26381)]
+    app.config["REDIS_SENTINEL_KWARGS"] = {
+        "socket_timeout": 2,
+        "socket_connect_timeout": 1
+    }
+    app.config["REDIS_CONNECTION_KWARGS"] = {
+        "decode_responses": True
+    }
+
+    rds = Sentinel()
+    rds.init_app(app)
+    return rds.slave_for("redis-py-test")

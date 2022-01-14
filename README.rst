@@ -1,6 +1,13 @@
 Flask-Redis
 ============
 
+.. image:: https://github.com/Eastwu5788/Flask-Redis/actions/workflows/intergration.yml/badge.svg
+    :target: https://github.com/Eastwu5788/Flask-Redis/actions/workflows/intergration.yml
+.. image:: https://codecov.io/gh/Eastwu5788/Flask-Redis/branch/master/graph/badge.svg?token=GIHTW0XDK7
+    :target: https://codecov.io/gh/Eastwu5788/Flask-Redis
+.. image:: https://badge.fury.io/py/flask-redis-ext.svg
+    :target: https://badge.fury.io/py/flask-redis-ext
+
 Flask-Redis is an extension for Flask that adds support for Redis to your application. It aims to simplify manage multi
 Redis databases with Flask.
 
@@ -45,7 +52,6 @@ Multiple Databases
 
     app.config["REDIS_BINDS"] = {
         "default": {
-            "REDIS_PREFIX": "DEFAULT:",
             "REDIS_URL": "redis://:password@host:port/db",
         },
         "DB12": {
@@ -207,7 +213,7 @@ to config connection info. You will get details about sentinel mode parameter at
 Links
 ======
 
-* Release: https://pypi.org/project/pre-request/
+* Release: https://pypi.org/project/flask-redis-ext/
 * Code: https://github.com/Eastwu5788/Flask-Redis
 * Issue tracker: https://github.com/Eastwu5788/Flask-Redis/issues
 * Test status: https://coveralls.io/github/Eastwu5788/Flask-Redis
