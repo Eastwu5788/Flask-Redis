@@ -4,5 +4,6 @@ redis==4.1.0
 flake8==4.0.1
 pylint==2.12.2
 
+tox==3.24.5
 pytest==6.2.5
-coverage==6.2
+pytest-cov==3.0.0

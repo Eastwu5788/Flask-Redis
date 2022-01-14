@@ -29,3 +29,26 @@ jobs:
           pip install -r requirements.txt
           flake8 flask_redis
           pylint flask_redis
+
+  tests:
+    name: Code test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Run Tests
+        run: |
+          pip install -r requirements.txt
+          tox
+
+      - name: Upload codecov coverage
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
