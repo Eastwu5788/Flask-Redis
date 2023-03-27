@@ -1,5 +1,5 @@
 Flask==2.0.2
-redis==4.1.0
+redis==4.5.3
 
 flake8==4.0.1
 pylint==2.12.2
